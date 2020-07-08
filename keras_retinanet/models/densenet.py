@@ -54,7 +54,7 @@ class DenseNetBackbone(Backbone):
             raise ValueError('Weights for "channels_first" format are not available.')
 
         weights_url = origin + file_name.format(self.backbone)
-        return get_file(file_name.format(self.backbone), weights_url, cache_subdir='models')
+        return get_file(file_name.format(self.backbone), weights_url, cache_subdir='nn_models')
 
     def validate(self):
         """ Checks whether the backbone string is correct.

@@ -77,7 +77,7 @@ def load_model(filepath, backbone_name='resnet50'):
         backbone_name         : Backbone with which the model was trained.
 
     Returns
-        A keras.models.Model object.
+        A keras.nn_models.Model object.
 
     Raises
         ImportError: if h5py is not available.
@@ -98,7 +98,7 @@ def convert_model(model, nms=True, class_specific_filter=True, anchor_params=Non
         **kwargs              : Inference and minimal retinanet model settings.
 
     Returns
-        A keras.models.Model object.
+        A keras.nn_models.Model object.
 
     Raises
         ImportError: if h5py is not available.

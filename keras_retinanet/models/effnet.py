@@ -44,7 +44,7 @@ class EfficientNetBackbone(Backbone):
         model_name = 'efficientnet-b' + self.backbone[-1]
         file_name = model_name + '_weights_tf_dim_ordering_tf_kernels_autoaugment_notop.h5'
         file_hash = IMAGENET_WEIGHTS_HASHES[model_name][1]
-        weights_path = get_file(file_name, IMAGENET_WEIGHTS_PATH + file_name, cache_subdir='models', file_hash=file_hash)
+        weights_path = get_file(file_name, IMAGENET_WEIGHTS_PATH + file_name, cache_subdir='nn_models', file_hash=file_hash)
         return weights_path
 
     def validate(self):

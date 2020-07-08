@@ -39,7 +39,7 @@ def default_classification_model(
         name                        : The name of the submodel.
 
     Returns
-        A keras.models.Model that predicts classes for each anchor.
+        A keras.nn_models.Model that predicts classes for each anchor.
     """
     options = {
         'kernel_size' : 3,
@@ -90,7 +90,7 @@ def default_regression_model(num_values, num_anchors, pyramid_feature_size=256, 
         name                    : The name of the submodel.
 
     Returns
-        A keras.models.Model that predicts regression values for each anchor.
+        A keras.nn_models.Model that predicts regression values for each anchor.
     """
     # All new conv layers except the final one in the
     # RetinaNet (classification) subnets are initialized
@@ -217,7 +217,7 @@ def __build_pyramid(models, features):
     """ Applies all submodels to each FPN level.
 
     Args
-        models   : List of submodels to run on each pyramid level (by default only regression, classifcation).
+        nn_models   : List of submodels to run on each pyramid level (by default only regression, classifcation).
         features : The FPN features.
 
     Returns
@@ -278,7 +278,7 @@ def retinanet(
         name                    : Name of the model.
 
     Returns
-        A keras.models.Model which takes an image as input and outputs generated anchors and the result from each submodel on every pyramid level.
+        A keras.nn_models.Model which takes an image as input and outputs generated anchors and the result from each submodel on every pyramid level.
 
         The order of the outputs is as defined in submodels:
         ```
@@ -345,7 +345,7 @@ def retinanet_bbox(
         **kwargs              : Additional kwargs to pass to the minimal retinanet model.
 
     Returns
-        A keras.models.Model which takes an image as input and outputs the detections on the image.
+        A keras.nn_models.Model which takes an image as input and outputs the detections on the image.
 
         The order is defined as follows:
         ```

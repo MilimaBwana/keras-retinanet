@@ -59,7 +59,7 @@ class MobileNetBackbone(Backbone):
 
         model_name = 'mobilenet_{}_{}_tf_no_top.h5'.format(alpha_text, rows)
         weights_url = mobilenet.mobilenet.BASE_WEIGHT_PATH + model_name
-        weights_path = get_file(model_name, weights_url, cache_subdir='models')
+        weights_path = get_file(model_name, weights_url, cache_subdir='nn_models')
 
         return weights_path
 

@@ -56,7 +56,7 @@ class ResNetBackbone(Backbone):
         return get_file(
             filename,
             resource,
-            cache_subdir='models',
+            cache_subdir='nn_models',
             md5_hash=checksum
         )
 

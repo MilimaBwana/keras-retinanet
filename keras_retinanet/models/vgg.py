@@ -48,7 +48,7 @@ class VGGBackbone(Backbone):
         return get_file(
             '{}_weights_tf_dim_ordering_tf_kernels_notop.h5'.format(self.backbone),
             resource,
-            cache_subdir='models',
+            cache_subdir='nn_models',
             file_hash=checksum
         )
 

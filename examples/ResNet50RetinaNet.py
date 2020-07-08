@@ -39,7 +39,7 @@ setup_gpu(gpu)
 
 
 # adjust this to point to your downloaded/trained model
-# models can be downloaded here: https://github.com/fizyr/keras-retinanet/releases
+# nn_models can be downloaded here: https://github.com/fizyr/keras-retinanet/releases
 model_path = os.path.join('..', 'snapshots', 'resnet50_coco_best_v2.1.0.h5')
 
 # load retinanet model
@@ -47,7 +47,7 @@ model = models.load_model(model_path, backbone_name='resnet50')
 
 # if the model is not converted to an inference model, use the line below
 # see: https://github.com/fizyr/keras-retinanet#converting-a-training-model-to-inference-model
-# model = models.convert_model(model)
+# model = nn_models.convert_model(model)
 
 #print(model.summary())
 

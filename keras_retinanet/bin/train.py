@@ -78,7 +78,7 @@ def model_with_weights(model, weights, skip_mismatch):
 
 def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
                   freeze_backbone=False, lr=1e-5, config=None):
-    """ Creates three models (model, training_model, prediction_model).
+    """ Creates three nn_models (model, training_model, prediction_model).
 
     Args
         backbone_retinanet : A function to call to create a retinanet model with a given backbone.
@@ -430,7 +430,7 @@ def parse_args(args):
     parser.add_argument('--epochs',           help='Number of epochs to train.', type=int, default=50)
     parser.add_argument('--steps',            help='Number of steps per epoch.', type=int, default=10000)
     parser.add_argument('--lr',               help='Learning rate.', type=float, default=1e-5)
-    parser.add_argument('--snapshot-path',    help='Path to store snapshots of models during training (defaults to \'./snapshots\')', default='./snapshots')
+    parser.add_argument('--snapshot-path',    help='Path to store snapshots of nn_models during training (defaults to \'./snapshots\')', default='./snapshots')
     parser.add_argument('--tensorboard-dir',  help='Log directory for Tensorboard output', default='')  # default='./logs') => https://github.com/tensorflow/tensorflow/pull/34870
     parser.add_argument('--no-snapshots',     help='Disable saving snapshots.', dest='snapshots', action='store_false')
     parser.add_argument('--no-evaluation',    help='Disable per epoch evaluation.', dest='evaluation', action='store_false')
