@@ -45,8 +45,8 @@ def draw_caption(image, box, caption):
     """
     b = np.array(box).astype(int)
     image = image.astype(np.uint8)
-    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0), 2)
-    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 0.8, (0, 0, 0), 2)
+    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
     return image
 
 
@@ -78,8 +78,8 @@ def draw_detections(image, boxes, scores, labels, color=None, label_to_name=None
     selection = np.where(scores > score_threshold)[0]
 
     for i in selection:
-        c = color if color is not None else label_color(labels[i])
-        image = draw_box(image, boxes[i, :], color=c)
+        #c = color if color is not None else label_color(labels[i])
+        image = draw_box(image, boxes[i, :], color=(0, 255, 0))
 
         # draw labels
         caption = (label_to_name(labels[i]) if label_to_name else labels[i]) + ': {0:.2f}'.format(scores[i])
@@ -106,9 +106,9 @@ def draw_annotations(image, annotations, color=(0, 255, 0), label_to_name=None):
 
     for i in range(annotations['bboxes'].shape[0]):
         label   = annotations['labels'][i]
-        c       = color if color is not None else label_color(label)
+        #c       = color if color is not None else label_color(label)
         caption = '{}'.format(label_to_name(label) if label_to_name else label)
         image = draw_caption(image, annotations['bboxes'][i], caption)
-        image = draw_box(image, annotations['bboxes'][i], color=c)
+        image = draw_box(image, annotations['bboxes'][i], color=(255, 0, 0))
 
     return image

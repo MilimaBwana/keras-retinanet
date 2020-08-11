@@ -40,7 +40,7 @@ class TestFilterDetections(object):
         classification = keras.backend.constant(classification)
 
         # compute output
-        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification])
+        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification], )
         actual_boxes  = keras.backend.eval(actual_boxes)
         actual_scores = keras.backend.eval(actual_scores)
         actual_labels = keras.backend.eval(actual_labels)
@@ -89,7 +89,7 @@ class TestFilterDetections(object):
         other = [keras.backend.constant(o) for o in other]
 
         # compute output
-        actual = filter_detections_layer.call([boxes, classification] + other)
+        actual = filter_detections_layer.call([boxes, classification] + other, )
         actual_boxes  = keras.backend.eval(actual[0])
         actual_scores = keras.backend.eval(actual[1])
         actual_labels = keras.backend.eval(actual[2])
@@ -149,7 +149,7 @@ class TestFilterDetections(object):
         classification = keras.backend.constant(classification)
 
         # compute output
-        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification])
+        actual_boxes, actual_scores, actual_labels = filter_detections_layer.call([boxes, classification], )
         actual_boxes  = keras.backend.eval(actual_boxes)
         actual_scores = keras.backend.eval(actual_scores)
         actual_labels = keras.backend.eval(actual_labels)

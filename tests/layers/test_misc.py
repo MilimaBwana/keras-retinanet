@@ -36,7 +36,7 @@ class TestAnchors(object):
         features = keras.backend.variable(features)
 
         # call the Anchors layer
-        anchors = anchors_layer.call(features)
+        anchors = anchors_layer.call(features, )
         anchors = keras.backend.eval(anchors)
 
         # expected anchor values
@@ -65,7 +65,7 @@ class TestAnchors(object):
         features = keras.backend.variable(features)
 
         # call the Anchors layer
-        anchors = anchors_layer.call(features)
+        anchors = anchors_layer.call(features, )
         anchors = keras.backend.eval(anchors)
 
         # expected anchor values
@@ -94,7 +94,7 @@ class TestUpsampleLike(object):
         target   = keras.backend.variable(target)
 
         # compute output
-        actual = upsample_like_layer.call([source, target])
+        actual = upsample_like_layer.call([source, target], )
         actual = keras.backend.eval(actual)
 
         np.testing.assert_array_equal(actual, expected)
@@ -112,7 +112,7 @@ class TestUpsampleLike(object):
         target   = keras.backend.variable(target)
 
         # compute output
-        actual = upsample_like_layer.call([source, target])
+        actual = upsample_like_layer.call([source, target], )
         actual = keras.backend.eval(actual)
 
         np.testing.assert_array_equal(actual, expected)
@@ -142,7 +142,7 @@ class TestRegressBoxes(object):
         regression = keras.backend.variable(regression)
 
         # compute output
-        actual = regress_boxes_layer.call([anchors, regression])
+        actual = regress_boxes_layer.call([anchors, regression], )
         actual = keras.backend.eval(actual)
 
         # compute expected output
@@ -192,7 +192,7 @@ class TestRegressBoxes(object):
         regression = keras.backend.variable(regression)
 
         # compute output
-        actual = regress_boxes_layer.call([anchors, regression])
+        actual = regress_boxes_layer.call([anchors, regression], )
         actual = keras.backend.eval(actual)
 
         # compute expected output
