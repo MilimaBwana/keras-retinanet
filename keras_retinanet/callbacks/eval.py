@@ -29,6 +29,7 @@ class Evaluate(keras.callbacks.Callback):
         score_threshold=0.05,
         max_detections=100,
         save_path=None,
+        logger = None,
         tensorboard=None,
         weighted_average=False,
         verbose=1
@@ -41,6 +42,7 @@ class Evaluate(keras.callbacks.Callback):
             score_threshold  : The score confidence threshold to use for detections.
             max_detections   : The maximum number of detections to use per image.
             save_path        : The path to save images with visualized detections to.
+            logger           : Logger to save metric values.
             tensorboard      : Instance of keras.callbacks.TensorBoard used to log the mAP value.
             weighted_average : Compute the mAP using the weighted average of precisions among classes.
             verbose          : Set the verbosity level, by default this is set to 1.
@@ -50,6 +52,7 @@ class Evaluate(keras.callbacks.Callback):
         self.score_threshold = score_threshold
         self.max_detections  = max_detections
         self.save_path       = save_path
+        self.logger          = logger
         self.tensorboard     = tensorboard
         self.weighted_average = weighted_average
         self.verbose         = verbose
@@ -93,6 +96,8 @@ class Evaluate(keras.callbacks.Callback):
                 self.tensorboard.writer.add_summary(summary, epoch)
 
         logs['mAP'] = self.mean_ap
+
+        self.logger.on_epoch_end(current_monitor=logs['mAP'], current_metric_values=logs, epoch=epoch)
 
         if self.verbose == 1:
             print('mAP: {:.4f}'.format(self.mean_ap))
