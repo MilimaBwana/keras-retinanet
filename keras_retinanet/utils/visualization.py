@@ -79,7 +79,7 @@ def draw_detections(image, boxes, scores, labels, color=None, label_to_name=None
 
     for i in selection:
         #c = color if color is not None else label_color(labels[i])
-        image = draw_box(image, boxes[i, :], color=(0, 255, 0))
+        image = draw_box(image, boxes[i, :], color=(255, 0, 0))
 
         # draw labels
         caption = (label_to_name(labels[i]) if label_to_name else labels[i]) + ': {0:.2f}'.format(scores[i])
@@ -109,6 +109,6 @@ def draw_annotations(image, annotations, color=(255, 0, 0), label_to_name=None):
         #c       = color if color is not None else label_color(label)
         caption = '{}'.format(label_to_name(label) if label_to_name else label)
         image = draw_caption(image, annotations['bboxes'][i], caption)
-        image = draw_box(image, annotations['bboxes'][i], color=(255, 0, 0))
+        image = draw_box(image, annotations['bboxes'][i], color=(0, 255, 0))
 
     return image
