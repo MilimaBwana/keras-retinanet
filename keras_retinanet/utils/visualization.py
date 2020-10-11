@@ -35,7 +35,7 @@ def draw_box(image, box, color, thickness=2):
     return image
 
 
-def draw_caption(image, box, caption):
+def draw_caption(image, box, caption, above_bb=True, color=(0,0,0)):
     """ Draws a caption above the box in an image.
 
     # Arguments
@@ -45,8 +45,12 @@ def draw_caption(image, box, caption):
     """
     b = np.array(box).astype(int)
     image = image.astype(np.uint8)
-    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 0.8, (0, 0, 0), 2)
-    image = cv2.putText(image, caption, (b[0], b[1] - 10), cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
+    if above_bb:
+        xy_coord_text = (b[0], b[1] - 10)
+    else:
+        xy_coord_text = (b[0], b[1] + b[3] - 10)
+    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 0.8, color, 2)
+    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
     return image
 
 
@@ -79,11 +83,12 @@ def draw_detections(image, boxes, scores, labels, color=None, label_to_name=None
 
     for i in selection:
         #c = color if color is not None else label_color(labels[i])
-        image = draw_box(image, boxes[i, :], color=(255, 0, 0))
+        # BGR
+        image = draw_box(image, boxes[i, :], color=(0, 0, 255))
 
         # draw labels
         caption = (label_to_name(labels[i]) if label_to_name else labels[i]) + ': {0:.2f}'.format(scores[i])
-        image = draw_caption(image, boxes[i, :], caption)
+        image = draw_caption(image, boxes[i, :], caption, above_bb=False, color=(0, 0, 255))
 
     return image
 
@@ -108,7 +113,7 @@ def draw_annotations(image, annotations, color=(255, 0, 0), label_to_name=None):
         label   = annotations['labels'][i]
         #c       = color if color is not None else label_color(label)
         caption = '{}'.format(label_to_name(label) if label_to_name else label)
-        image = draw_caption(image, annotations['bboxes'][i], caption)
+        image = draw_caption(image, annotations['bboxes'][i], caption, above_bb=True, color=(0, 255, 0))
         image = draw_box(image, annotations['bboxes'][i], color=(0, 255, 0))
 
     return image
