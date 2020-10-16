@@ -153,7 +153,7 @@ def _get_annotations(generator):
 def evaluate(
     generator,
     model,
-    iou_threshold=0.5,
+    iou_thresholds=None,
     score_threshold=0.05,
     max_detections=100,
     save_path=None
@@ -163,7 +163,7 @@ def evaluate(
     # Arguments
         generator       : The generator that represents the dataset to evaluate.
         model           : The model to evaluate.
-        iou_threshold   : The threshold used to consider when a detection is positive or negative.
+        iou_thresholds  : list of thresholds used to consider when a detection is positive or negative.
         score_threshold : The score confidence threshold to use for detections.
         max_detections  : The maximum number of detections to use per image.
         save_path       : The path to save images with visualized detections to.
@@ -171,74 +171,79 @@ def evaluate(
         A dict mapping class names to mAP scores.
     """
     # gather all detections and annotations
+    if iou_thresholds is None:
+        iou_thresholds = [0.5, 0.7]
     all_detections, all_inferences = _get_detections(generator, model, score_threshold=score_threshold, max_detections=max_detections, save_path=save_path)
     all_annotations    = _get_annotations(generator)
-    average_precisions = {}
-
+    all_average_precisions= []
     # all_detections = pickle.load(open('all_detections.pkl', 'rb'))
     # all_annotations = pickle.load(open('all_annotations.pkl', 'rb'))
     # pickle.dump(all_detections, open('all_detections.pkl', 'wb'))
     # pickle.dump(all_annotations, open('all_annotations.pkl', 'wb'))
 
     # process detections and annotations
-    for label in range(generator.num_classes()):
-        if not generator.has_label(label):
-            continue
+    for iou_threshold in iou_thresholds:
+        average_precisions = {}
+        for label in range(generator.num_classes()):
+            if not generator.has_label(label):
+                continue
 
-        false_positives = np.zeros((0,))
-        true_positives  = np.zeros((0,))
-        scores          = np.zeros((0,))
-        num_annotations = 0.0
+            false_positives = np.zeros((0,))
+            true_positives  = np.zeros((0,))
+            scores          = np.zeros((0,))
+            num_annotations = 0.0
 
-        for i in range(generator.size()):
-            detections           = all_detections[i][label]
-            annotations          = all_annotations[i][label]
-            num_annotations     += annotations.shape[0]
-            detected_annotations = []
+            for i in range(generator.size()):
+                detections           = all_detections[i][label]
+                annotations          = all_annotations[i][label]
+                num_annotations     += annotations.shape[0]
+                detected_annotations = []
 
-            for d in detections:
-                scores = np.append(scores, d[4])
+                for d in detections:
+                    scores = np.append(scores, d[4])
 
-                if annotations.shape[0] == 0:
-                    false_positives = np.append(false_positives, 1)
-                    true_positives  = np.append(true_positives, 0)
-                    continue
+                    if annotations.shape[0] == 0:
+                        false_positives = np.append(false_positives, 1)
+                        true_positives  = np.append(true_positives, 0)
+                        continue
 
-                overlaps            = compute_overlap(np.expand_dims(d, axis=0), annotations) # Overlaps gives back IoU Value
-                assigned_annotation = np.argmax(overlaps, axis=1)
-                max_overlap         = overlaps[0, assigned_annotation]
+                    overlaps            = compute_overlap(np.expand_dims(d, axis=0), annotations) # Overlaps gives back IoU Value
+                    assigned_annotation = np.argmax(overlaps, axis=1)
+                    max_overlap         = overlaps[0, assigned_annotation]
 
-                if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
-                    false_positives = np.append(false_positives, 0)
-                    true_positives  = np.append(true_positives, 1)
-                    detected_annotations.append(assigned_annotation)
-                else:
-                    false_positives = np.append(false_positives, 1)
-                    true_positives  = np.append(true_positives, 0)
+                    if max_overlap >= iou_threshold and assigned_annotation not in detected_annotations:
+                        false_positives = np.append(false_positives, 0)
+                        true_positives  = np.append(true_positives, 1)
+                        detected_annotations.append(assigned_annotation)
+                    else:
+                        false_positives = np.append(false_positives, 1)
+                        true_positives  = np.append(true_positives, 0)
 
-        # no annotations -> AP for this class is 0 (is this correct?)
-        if num_annotations == 0:
-            average_precisions[label] = 0, 0
-            continue
+            # no annotations -> AP for this class is 0 (is this correct?)
+            if num_annotations == 0:
+                average_precisions[label] = 0, 0
+                continue
 
-        # sort by score
-        indices         = np.argsort(-scores)
-        false_positives = false_positives[indices]
-        true_positives  = true_positives[indices]
+            # sort by score
+            indices         = np.argsort(-scores)
+            false_positives = false_positives[indices]
+            true_positives  = true_positives[indices]
 
-        # compute false positives and true positives
-        false_positives = np.cumsum(false_positives)
-        true_positives  = np.cumsum(true_positives)
+            # compute false positives and true positives
+            false_positives = np.cumsum(false_positives)
+            true_positives  = np.cumsum(true_positives)
 
-        # compute recall and precision
-        recall    = true_positives / num_annotations
-        precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
+            # compute recall and precision
+            recall    = true_positives / num_annotations
+            precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
 
-        # compute average precision
-        average_precision  = _compute_ap(recall, precision)
-        average_precisions[label] = average_precision, num_annotations
+            # compute average precision
+            average_precision  = _compute_ap(recall, precision)
+            average_precisions[label] = average_precision, num_annotations
+
+        all_average_precisions.append(average_precisions)
 
     # inference time
     inference_time = np.sum(all_inferences) / generator.size()
 
-    return average_precisions, inference_time
+    return all_average_precisions, inference_time

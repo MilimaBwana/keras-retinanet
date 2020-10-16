@@ -170,7 +170,7 @@ def main(args=None):
         average_precisions, inference_time = evaluate(
             generator,
             model,
-            iou_threshold=args.iou_threshold,
+            iou_thresholds=args.iou_threshold,
             score_threshold=args.score_threshold,
             max_detections=args.max_detections,
             save_path=args.save_path

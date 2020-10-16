@@ -25,7 +25,7 @@ class Evaluate(keras.callbacks.Callback):
     def __init__(
         self,
         generator,
-        iou_threshold=0.5,
+        iou_thresholds=None,
         score_threshold=0.05,
         max_detections=100,
         save_path=None,
@@ -42,13 +42,15 @@ class Evaluate(keras.callbacks.Callback):
             score_threshold  : The score confidence threshold to use for detections.
             max_detections   : The maximum number of detections to use per image.
             save_path        : The path to save images with visualized detections to.
-            logger           : Logger to save metric values.
+            logger           : Logger to log metric values.
             tensorboard      : Instance of keras.callbacks.TensorBoard used to log the mAP value.
             weighted_average : Compute the mAP using the weighted average of precisions among classes.
             verbose          : Set the verbosity level, by default this is set to 1.
         """
+        if iou_thresholds is None:
+            iou_thresholds = [0.5, 0.7]
         self.generator       = generator
-        self.iou_threshold   = iou_threshold
+        self.iou_thresholds   = iou_thresholds
         self.score_threshold = score_threshold
         self.max_detections  = max_detections
         self.save_path       = save_path
@@ -66,25 +68,42 @@ class Evaluate(keras.callbacks.Callback):
         average_precisions, _ = evaluate(
             self.generator,
             self.model,
-            iou_threshold=self.iou_threshold,
+            iou_thresholds=self.iou_thresholds,
             score_threshold=self.score_threshold,
             max_detections=self.max_detections,
             save_path=self.save_path
         )
 
         # compute per class average precision
-        total_instances = []
-        precisions = []
-        for label, (average_precision, num_annotations) in average_precisions.items():
+
+        macro_maps = []
+        micro_maps = []
+        for idx, iou_threshold in enumerate(self.iou_thresholds):
+            total_instances = []
+            precisions = []
+            for label, (average_precision, num_annotations) in average_precisions[idx].items():
+                if self.verbose == 1:
+                    print('{:.0f} instances of class'.format(num_annotations),
+                          self.generator.label_to_name(label), 'with average precision: {:.4f}'.format(average_precision))
+                total_instances.append(num_annotations)
+                precisions.append(average_precision)
+
+            macro_map = sum(precisions) / sum(x > 0 for x in total_instances)
+            micro_map = sum([a * b for a, b in zip(total_instances, precisions)]) / sum(total_instances)
+            macro_maps.append(macro_map)
+            micro_maps.append(micro_map)
+            logs['micro mAP@' + str(iou_threshold)] = micro_map
+            logs['macro mAP@' + str(iou_threshold)] = macro_map
+
             if self.verbose == 1:
-                print('{:.0f} instances of class'.format(num_annotations),
-                      self.generator.label_to_name(label), 'with average precision: {:.4f}'.format(average_precision))
-            total_instances.append(num_annotations)
-            precisions.append(average_precision)
+                print('macro mAP@{}: {}'.format(iou_threshold, macro_maps[idx]))
+                print('micro mAP@{}: {}'.format(iou_threshold, micro_maps[idx]))
+
+
         if self.weighted_average:
-            self.mean_ap = sum([a * b for a, b in zip(total_instances, precisions)]) / sum(total_instances)
+            self.mean_ap = sum(micro_maps)/len(micro_maps)
         else:
-            self.mean_ap = sum(precisions) / sum(x > 0 for x in total_instances)
+            self.mean_ap = sum(macro_maps)/len(macro_maps)
 
         if self.tensorboard:
             import tensorflow as tf
@@ -98,6 +117,3 @@ class Evaluate(keras.callbacks.Callback):
         logs['mAP'] = self.mean_ap
 
         self.logger.on_epoch_end(current_monitor=logs['mAP'], current_metric_values=logs, epoch=epoch)
-
-        if self.verbose == 1:
-            print('mAP: {:.4f}'.format(self.mean_ap))
