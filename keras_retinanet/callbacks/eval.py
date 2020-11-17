@@ -104,6 +104,7 @@ class Evaluate(keras.callbacks.Callback):
             self.mean_ap = sum(micro_maps)/len(micro_maps)
         else:
             self.mean_ap = sum(macro_maps)/len(macro_maps)
+
         if self.tensorboard:
             import tensorflow as tf
             if tf.version.VERSION < '2.0.0' and self.tensorboard.writer:
@@ -115,4 +116,4 @@ class Evaluate(keras.callbacks.Callback):
 
         logs['mAP'] = self.mean_ap
 
-        self.logger.on_epoch_end(current_monitor=logs['mAP'], current_metric_values=logs, epoch=epoch)
+        self.logger.on_epoch_end(current_monitor=logs['mAP'], current_metric_values=logs, epoch=epoch + 1)
