@@ -120,7 +120,7 @@ class CSVGenerator(Generator):
     def __init__(
         self,
         csv_data_file,
-        csv_class_file,
+        dictionary,
         base_dir=None,
         **kwargs
     ):
@@ -128,7 +128,7 @@ class CSVGenerator(Generator):
 
         Args
             csv_data_file: Path to the CSV annotations file.
-            csv_class_file: Path to the CSV classes file.
+            dictionary: Dictionary with classes as keys and int labels as values.
             base_dir: Directory w.r.t. where the files are to be searched (defaults to the directory containing the csv_data_file).
         """
         self.image_names = []
@@ -140,12 +140,12 @@ class CSVGenerator(Generator):
             self.base_dir = os.path.dirname(csv_data_file)
 
         # parse the provided class file
-        try:
-            with _open_for_csv(csv_class_file) as file:
-                self.classes = _read_classes(csv.reader(file, delimiter=','))
-        except ValueError as e:
-            raise_from(ValueError('invalid CSV class file: {}: {}'.format(csv_class_file, e)), None)
-
+        #try:
+        #    with _open_for_csv(csv_class_file) as file:
+        #        self.classes = _read_classes(csv.reader(file, delimiter=','))
+        #except ValueError as e:
+            #raise_from(ValueError('invalid CSV class file: {}: {}'.format(csv_class_file, e)), None)
+        self.classes = dictionary
         self.labels = {}
         for key, value in self.classes.items():
             self.labels[value] = key

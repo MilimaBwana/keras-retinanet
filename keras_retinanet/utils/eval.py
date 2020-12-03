@@ -156,6 +156,7 @@ def evaluate(
     iou_thresholds=None,
     score_threshold=0.05,
     max_detections=100,
+    small_threshold = 0.15,
     save_path=None
 ):
     """ Evaluate a given dataset using a given model.
@@ -175,6 +176,7 @@ def evaluate(
         iou_thresholds = [0.5, 0.7]
     all_detections, all_inferences = _get_detections(generator, model, score_threshold=score_threshold, max_detections=max_detections, save_path=save_path)
     all_annotations    = _get_annotations(generator)
+
     all_average_precisions= []
     # all_detections = pickle.load(open('all_detections.pkl', 'rb'))
     # all_annotations = pickle.load(open('all_annotations.pkl', 'rb'))
@@ -184,16 +186,26 @@ def evaluate(
     # process detections and annotations
     for iou_threshold in iou_thresholds:
         average_precisions = {}
+        small_average_precisions = {}
+        large_average_precisions = {}
+
         for label in range(generator.num_classes()):
+            # Iterate over classes
             if not generator.has_label(label):
                 continue
 
             false_positives = np.zeros((0,))
             true_positives  = np.zeros((0,))
+            false_positives_small = np.zeros((0,))
+            true_positives_small  = np.zeros((0,))
+            false_positives_large = np.zeros((0,))
+            true_positives_large  = np.zeros((0,))
+
             scores          = np.zeros((0,))
             num_annotations = 0.0
 
             for i in range(generator.size()):
+                # Iterate over images
                 detections           = all_detections[i][label]
                 annotations          = all_annotations[i][label]
                 num_annotations     += annotations.shape[0]
@@ -234,11 +246,11 @@ def evaluate(
             true_positives  = np.cumsum(true_positives)
 
             # compute recall and precision
-            recall    = true_positives / num_annotations
-            precision = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
+            r  = true_positives / num_annotations
+            p = true_positives / np.maximum(true_positives + false_positives, np.finfo(np.float64).eps)
 
             # compute average precision
-            average_precision  = _compute_ap(recall, precision)
+            average_precision  = _compute_ap(r, p)
             average_precisions[label] = average_precision, num_annotations
 
         all_average_precisions.append(average_precisions)

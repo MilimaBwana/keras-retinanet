@@ -49,8 +49,8 @@ def draw_caption(image, box, caption, above_bb=True, color=(0,0,0)):
         xy_coord_text = (b[0], b[1] - 10)
     else:
         xy_coord_text = (b[0], b[3] + 10)
-    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 0.8, color, 2)
-    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 0.8, (255, 255, 255), 1)
+    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 1.5, color, 2)
+    image = cv2.putText(image, caption, xy_coord_text, cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 1)
     return image
 
 
