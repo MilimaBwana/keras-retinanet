@@ -155,7 +155,7 @@ def layer_shapes(image_shape, model):
         model: The model to use for computing how the image shape is transformed in the pyramid.
 
     Returns
-        A dictionary mapping layer names to image shapes.
+        A label2name mapping layer names to image shapes.
     """
     shape = {
         model.layers[0].name: (None,) + image_shape,

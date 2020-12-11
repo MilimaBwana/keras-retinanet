@@ -6,7 +6,7 @@ class Backbone(object):
     """ This class stores additional information on backbones.
     """
     def __init__(self, backbone):
-        # a dictionary mapping custom layer names to the correct classes
+        # a label2name mapping custom layer names to the correct classes
         from .. import layers
         from .. import losses
         from .. import initializers

@@ -128,12 +128,12 @@ def __create_pyramid_features(backbone_layers, pyramid_levels, feature_size=256)
     """ Creates the FPN layers on top of the backbone features.
 
     Args
-        backbone_layers: a dictionary containing feature stages C3, C4, C5 from the backbone. Also contains C2 if provided.
+        backbone_layers: a label2name containing feature stages C3, C4, C5 from the backbone. Also contains C2 if provided.
         pyramid_levels: Pyramid levels in use.
         feature_size : The feature size to use for the resulting feature levels.
 
     Returns
-        output_layers : A dict of feature levels. P3, P4, P5, P6 are always included. P2, P6, P7 included if in use.
+        output_layers : A names2label of feature levels. P3, P4, P5, P6 are always included. P2, P6, P7 included if in use.
     """
 
     output_layers = {}

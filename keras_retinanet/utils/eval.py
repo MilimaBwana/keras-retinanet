@@ -169,7 +169,7 @@ def evaluate(
         max_detections  : The maximum number of detections to use per image.
         save_path       : The path to save images with visualized detections to.
     # Returns
-        A dict mapping class names to mAP scores.
+        A names2label mapping class names to mAP scores.
     """
     # gather all detections and annotations
     if iou_thresholds is None:

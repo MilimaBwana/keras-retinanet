@@ -124,7 +124,7 @@ class Generator(keras.utils.Sequence):
     def label_to_name(self, label):
         """ Map label to name.
         """
-        raise NotImplementedError('label_to_name method not implemented')
+        raise NotImplementedError('label2name method not implemented')
 
     def image_aspect_ratio(self, image_index):
         """ Compute the aspect ratio for an image with image_index.
